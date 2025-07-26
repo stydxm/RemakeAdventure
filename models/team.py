@@ -3,7 +3,7 @@ import uuid
 
 
 class Team:
-    chat_history: list[dict[str, str | int]] = []
+    chat_history: list[dict[str, str | int]]
     summary: str
 
     def __init__(self, members: list[str], team_uuid: str = ""):
@@ -12,6 +12,7 @@ class Team:
         else:
             self.uuid = team_uuid
         self.members = members
+        self.chat_history = []
 
     def to_json(self):
         members = []

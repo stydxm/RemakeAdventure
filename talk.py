@@ -1,8 +1,10 @@
 import json
 import os
 import random
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from dotenv import load_dotenv
+from tqdm import tqdm
 
 if os.environ.get("KIMI_API_KEY") is None:
     load_dotenv()
@@ -26,9 +28,9 @@ for team_files in os.listdir("results/teams"):
 def communicate(single_team: team.Team):
     end = False
     while not end:
+        random.shuffle(single_team.members)
         for team_member in single_team.members:
             team_member_instance = players[team_member]
-            print(single_team.uuid + " " + team_member_instance.uuid)
             member_introductions = "以下是你的队友："
             for other_member in single_team.members:
                 if other_member != team_member:
@@ -56,11 +58,9 @@ def communicate(single_team: team.Team):
                 "token": response.usage.completion_tokens,
                 "content": response_message
             })
-            # print(response_message)
             if response_message.endswith("结束") or "结束" in response_message and len(response_message) < 50:
                 end = True
                 break
-            # print("\n+++\n")
     summary_messages = [{"role": "system",
                          "content": "现在你正在参加一场全中国最大的黑客松，以下是你和队友们讨论的结果。请你简要总结并描述你们组想做的项目内容，不需要过度描述细节"}]
     chat_history_content = "讨论内容："
@@ -77,21 +77,16 @@ def communicate(single_team: team.Team):
     f.close()
 
 
-# progress_bar = tqdm(total=len(teams))
-# finished = 0
-# pool = ThreadPoolExecutor(max_workers=10)
-# futures = {pool.submit(communicate, i): i for i in teams}
-# for fut in as_completed(futures):
-#     idx = futures[fut]
-#     try:
-#         fut.result()
-#     except Exception as e:
-#         raise e
-#     finally:
-#         progress_bar.update(1)
-# progress_bar.close()
-
-for current_team in teams:
-    print(current_team.uuid)
-    communicate(current_team)
-    print()
+progress_bar = tqdm(total=len(teams))
+finished = 0
+pool = ThreadPoolExecutor(max_workers=10)
+futures = {pool.submit(communicate, i): i for i in teams}
+for fut in as_completed(futures):
+    idx = futures[fut]
+    try:
+        fut.result()
+    except Exception as e:
+        raise e
+    finally:
+        progress_bar.update(1)
+progress_bar.close()
