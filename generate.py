@@ -17,7 +17,8 @@ players: dict[str, player.Player] = {}
 def create_player():
     role = random.choice([player.Developer, player.Developer, player.Developer, player.Designer, player.Hacker])
     test_player = player.Player(temperature=random.choice(temperature_samples), role=role)
-    test_player.chat("你好，用几句话简单介绍一下你自己，并结合自己的人物设定写一些背景经历，但要尊重客观事实")
+    resp = test_player.chat("你好，用几句话简单介绍一下你自己，并结合自己的人物设定写一些背景经历，但要尊重客观事实")
+    test_player.introduction = resp.choices[0].message.content
     players[test_player.uuid] = test_player
 
 

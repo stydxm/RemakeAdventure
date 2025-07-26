@@ -14,6 +14,8 @@ class Team:
             self.uuid = team_uuid
         self.members = members
         self.chat_history = []
+        self.summary = ""
+        self.output = ""
 
     def to_json(self):
         members = []

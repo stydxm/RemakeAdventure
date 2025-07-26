@@ -65,7 +65,7 @@ class Player:
             "uuid": self.uuid,
             "temperature": round(self.temperature, 2),
             "role": get_args(self.role)[0],
-            "introduction": str(self.chat_history[-1]["content"]),
+            "introduction": self.introduction
         }
         return json.dumps(result, ensure_ascii=False)
 
