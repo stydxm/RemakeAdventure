@@ -72,6 +72,21 @@ def communicate(single_team: team.Team):
         messages=summary_messages
     )
     single_team.summary = response.choices[0].message.content
+    code_messages = [
+        {"role": "system",
+         "content": "现在你正在参加一场全中国最大的黑客松，现在你们已经完成了讨论，请你根据队友的能力，输出最后的内容。"
+                    "如果队里有程序员，就输出最后的项目代码（不包含其他内容），否则输出一份项目计划书"},
+        {"role": "system", "content": "你们的项目内容是：\n" + single_team.summary}
+    ]
+    member_introductions = "以下是你的队友："
+    for other_member in single_team.members:
+        member_introductions += "\n" + players[other_member].introduction
+    code_messages.append({"role": "user", "content": member_introductions})
+    response = model.chat.completions.create(
+        model="kimi-k2-0711-preview",
+        messages=code_messages
+    )
+    single_team.output = response.choices[0].message.content
     f = open(f"results/teams/{single_team.uuid}.json", "w")
     f.write(single_team.to_json())
     f.close()

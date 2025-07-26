@@ -5,6 +5,7 @@ import uuid
 class Team:
     chat_history: list[dict[str, str | int]]
     summary: str
+    output: str
 
     def __init__(self, members: list[str], team_uuid: str = ""):
         if team_uuid == "":
@@ -22,7 +23,8 @@ class Team:
             "members": members,
             "uuid": self.uuid,
             "chat_history": self.chat_history,
-            "summary": self.summary
+            "summary": self.summary,
+            "output": self.output
         }, ensure_ascii=False)
 
 
